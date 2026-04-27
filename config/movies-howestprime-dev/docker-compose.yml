@@ -1,0 +1,38 @@
+networks:
+  movies-howestprime-dev:
+    ipam:
+      config:
+        - subnet: 10.20.0.0/16
+  ticketing-howestprime-dev:
+    ipam:
+      config:
+        - subnet: 10.21.0.0/16
+  howestprime-test:
+    ipam:
+      config:
+        - subnet: 10.22.0.0/16
+          
+volumes:
+  postgres_data:
+
+services:
+  movies-db:
+    image: postgres:16
+    container_name: movies-db.howestprime.dev
+    networks:
+      - movies-howestprime-dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "40021:5000"
+    env_file:
+      - .movies-db.howestprime.dev.env
+
+  messagebroker:
+    image: cloudamqp/lavinmq
+    container_name: messagebroker.howestprime.dev
+    networks:
+      - movies-howestprime-dev
+    ports:
+      - "40000:5672"  # AMQP
+      - "40001:15672" # Management UI
