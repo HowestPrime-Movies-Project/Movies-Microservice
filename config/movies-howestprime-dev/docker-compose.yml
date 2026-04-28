@@ -3,14 +3,6 @@ networks:
     ipam:
       config:
         - subnet: 10.20.0.0/16
-  ticketing-howestprime-dev:
-    ipam:
-      config:
-        - subnet: 10.21.0.0/16
-  howestprime-test:
-    ipam:
-      config:
-        - subnet: 10.22.0.0/16
           
 volumes:
   postgres_data:
