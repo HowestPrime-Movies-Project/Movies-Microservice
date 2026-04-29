@@ -61,7 +61,7 @@ public class Movie : AggregateRoot<MovieId>
         Asserts.EnsureNotEmpty(Genres);
         Asserts.EnsureNotEmpty(Actors);
         Asserts.EnsureNotNegative(Duration.Runtime);
-        Asserts.EnsureLessThan(ReleaseYear.Year, DateTime.Now.Year);
+        Asserts.EnsureLessThanOrEqual(ReleaseYear.Year, DateTime.Now.Year);
     }
 }
 

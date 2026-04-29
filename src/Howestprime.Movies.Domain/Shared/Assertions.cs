@@ -31,7 +31,7 @@ public static class Asserts
             throw new ArgumentException($"Value must be greater than {threshold}.", paramName);
     }    
     
-    public static void EnsureLessThan(
+    public static void EnsureLessThanOrEqual(
         int value,
         int threshold,
         [CallerArgumentExpression(nameof(value))] string? paramName = ""

@@ -106,7 +106,7 @@ public sealed class AssertsTests
         const int threshold = 10;
 
         // Act
-        Action act = () => Asserts.EnsureLessThan(value, threshold);
+        Action act = () => Asserts.EnsureLessThanOrEqual(value, threshold);
 
         // Assert
         Assert.Null(Record.Exception(act));
@@ -120,7 +120,7 @@ public sealed class AssertsTests
         const int threshold = 10;
 
         // Act
-        Action act = () => Asserts.EnsureLessThan(value, threshold);
+        Action act = () => Asserts.EnsureLessThanOrEqual(value, threshold);
 
         // Assert
         ArgumentException exception = Assert.Throws<ArgumentException>(act);

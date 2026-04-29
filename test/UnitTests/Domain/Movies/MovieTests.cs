@@ -25,6 +25,106 @@ public sealed class MovieTests
     }
 
     [Fact]
+    public void Create_WithNullTitle_ShouldThrow()
+    {
+        // Arrange
+        string description = "A hacker discovers reality is simulated.";
+        ReleaseYear releaseYear = ReleaseYear.From(DateTime.Now.Year - 1);
+        Duration duration = Duration.From(136);
+        List<Genre> genres = [new Genre { Value = "Action" }];
+        List<Actor> actors = [new Actor { Value = "Keanu Reeves" }];
+        AgeRating ageRating = AgeRating.From(16);
+        PosterUrl posterUrl = PosterUrl.From("https://example.com/matrix.jpg");
+
+        // Act
+        Action act = () => Movie.Create(null!, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+
+        // Assert
+        Assert.Throws<ArgumentException>(act);
+    }
+    
+    [Fact]
+    public void Create_WithNullDescription_ShouldThrow()
+    {
+        // Arrange
+        string title = "The Matrix";
+        ReleaseYear releaseYear = ReleaseYear.From(DateTime.Now.Year - 1);
+        Duration duration = Duration.From(136);
+        List<Genre> genres = [new Genre { Value = "Action" }];
+        List<Actor> actors = [new Actor { Value = "Keanu Reeves" }];
+        AgeRating ageRating = AgeRating.From(16);
+        PosterUrl posterUrl = PosterUrl.From("https://example.com/matrix.jpg");
+
+        // Act
+        Action act = () => Movie.Create(title, null!, releaseYear, duration, genres, actors, ageRating, posterUrl);
+
+        // Assert
+        Assert.Throws<ArgumentException>(act);
+    }
+
+    [Fact]
+    public void Create_WithNegativeDuration_ShouldThrow()
+    {
+        // Arrange
+        string title = "The Matrix";
+        string description = "A hacker discovers reality is simulated.";
+        ReleaseYear releaseYear = ReleaseYear.From(DateTime.Now.Year - 1);
+        Duration duration = Duration.From(-1);
+        List<Genre> genres = [new Genre { Value = "Action" }];
+        List<Actor> actors = [new Actor { Value = "Keanu Reeves" }];
+        AgeRating ageRating = AgeRating.From(16);
+        PosterUrl posterUrl = PosterUrl.From("https://example.com/matrix.jpg");
+
+        // Act
+        Action act = () => Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+
+        // Assert
+        Assert.Throws<ArgumentException>(act);
+    }
+
+    [Fact]
+    public void Create_WithCurrentYearReleaseYear_ShouldNotThrow()
+    {
+        // Arrange
+        int currentYear = DateTime.Now.Year;
+        string title = "The Matrix";
+        string description = "A hacker discovers reality is simulated.";
+        ReleaseYear releaseYear = ReleaseYear.From(currentYear);
+        Duration duration = Duration.From(136);
+        List<Genre> genres = [new Genre { Value = "Action" }];
+        List<Actor> actors = [new Actor { Value = "Keanu Reeves" }];
+        AgeRating ageRating = AgeRating.From(16);
+        PosterUrl posterUrl = PosterUrl.From("https://example.com/matrix.jpg");
+
+        // Act
+        Action act = () => Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+
+        // Assert
+        Assert.Null(Record.Exception(act));
+    }
+
+    [Fact]
+    public void Create_WithFutureReleaseYear_ShouldThrow()
+    {
+        // Arrange
+        int currentYear = DateTime.Now.Year;
+        string title = "The Matrix";
+        string description = "A hacker discovers reality is simulated.";
+        ReleaseYear releaseYear = ReleaseYear.From(currentYear + 1);
+        Duration duration = Duration.From(136);
+        List<Genre> genres = [new Genre { Value = "Action" }];
+        List<Actor> actors = [new Actor { Value = "Keanu Reeves" }];
+        AgeRating ageRating = AgeRating.From(16);
+        PosterUrl posterUrl = PosterUrl.From("https://example.com/matrix.jpg");
+
+        // Act
+        Action act = () => Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+
+        // Assert
+        Assert.Throws<ArgumentException>(act);
+    }
+
+    [Fact]
     public void Create_WithValidState_ShouldMapPropertiesAndRaiseEvent()
     {
         // Arrange
@@ -138,44 +238,68 @@ public sealed class MovieTests
         Assert.Throws<ArgumentException>(act);
     }
 
+
     [Fact]
-    public void Create_WithNegativeDuration_ShouldThrow()
+    public void ValidateState_WithValidState_ShouldNotThrow()
     {
         // Arrange
-        string title = "The Matrix";
-        string description = "A hacker discovers reality is simulated.";
-        ReleaseYear releaseYear = ReleaseYear.From(DateTime.Now.Year - 1);
-        Duration duration = Duration.From(-1);
-        List<Genre> genres = [new Genre { Value = "Action" }];
-        List<Actor> actors = [new Actor { Value = "Keanu Reeves" }];
-        AgeRating ageRating = AgeRating.From(16);
-        PosterUrl posterUrl = PosterUrl.From("https://example.com/matrix.jpg");
+        string title = "Inception";
+        string description = "A mind-bending thriller";
+        ReleaseYear releaseYear = ReleaseYear.From(2010);
+        Duration duration = Duration.From(148);
+        List<Genre> genres = [new Genre { Value = "Sci-Fi" }];
+        List<Actor> actors = [new Actor { Value = "Leonardo DiCaprio" }];
+        AgeRating ageRating = AgeRating.From(13);
+        PosterUrl posterUrl = PosterUrl.From("https://example.com/inception.jpg");
 
         // Act
-        Action act = () => Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+        Movie movie = Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+        Action act = () => movie.ValidateState();
 
         // Assert
-        Assert.Throws<ArgumentException>(act);
+        Assert.Null(Record.Exception(act));
     }
 
     [Fact]
-    public void Create_WithFutureReleaseYear_ShouldThrow()
+    public void Create_WithVeryOldReleaseYear_ShouldSucceed()
     {
         // Arrange
-        int currentYear = DateTime.Now.Year;
+        string title = "Nosferatu";
+        string description = "A vampire film";
+        ReleaseYear releaseYear = ReleaseYear.From(1922);
+        Duration duration = Duration.From(94);
+        List<Genre> genres = [new Genre { Value = "Horror" }];
+        List<Actor> actors = [new Actor { Value = "Max Schreck" }];
+        AgeRating ageRating = AgeRating.From(18);
+        PosterUrl posterUrl = PosterUrl.From("https://example.com/nosferatu.jpg");
+
+        // Act
+        Movie movie = Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+
+        // Assert
+        Assert.NotEqual(default, movie.Id);
+        Assert.Equal(title, movie.Title);
+        Assert.Equal(releaseYear, movie.ReleaseYear);
+    }
+
+    [Fact]
+    public void Movie_Equality_SameReference_ShouldBeEqual()
+    {
+        // Arrange
         string title = "The Matrix";
         string description = "A hacker discovers reality is simulated.";
-        ReleaseYear releaseYear = ReleaseYear.From(currentYear + 1);
+        ReleaseYear releaseYear = ReleaseYear.From(1999);
         Duration duration = Duration.From(136);
         List<Genre> genres = [new Genre { Value = "Action" }];
         List<Actor> actors = [new Actor { Value = "Keanu Reeves" }];
         AgeRating ageRating = AgeRating.From(16);
         PosterUrl posterUrl = PosterUrl.From("https://example.com/matrix.jpg");
+        Movie movie = Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
 
         // Act
-        Action act = () => Movie.Create(title, description, releaseYear, duration, genres, actors, ageRating, posterUrl);
+        bool result = movie.Equals(movie);
 
         // Assert
-        Assert.Throws<ArgumentException>(act);
+        Assert.True(result);
     }
 }
