@@ -70,9 +70,10 @@ public sealed class EntityTests
     {
         // Arrange
         TestEntity entity = new(new TestId(Guid.NewGuid()));
+        object? value = null;
 
         // Act
-        bool equals = entity.Equals(null);
+        bool equals = entity.Equals(value);
 
         // Assert
         Assert.False(equals);
@@ -223,5 +224,48 @@ public sealed class EntityTests
         public override void ValidateState()
         {
         }
+    }
+
+    [Fact]
+    public void OperatorNotEquals_WithBothNull_ShouldBeFalse()
+    {
+        // Arrange
+        TestEntity? left = null;
+        TestEntity? right = null;
+
+        // Act
+        bool result = left != right;
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void OperatorNotEquals_WithEqualEntities_ShouldBeFalse()
+    {
+        // Arrange
+        TestId id = new(Guid.NewGuid());
+        TestEntity first = new(id);
+        TestEntity second = new(id);
+
+        // Act
+        bool result = first != second;
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void OperatorNotEquals_WithDifferentEntities_ShouldBeTrue()
+    {
+        // Arrange
+        TestEntity first = new(new TestId(Guid.NewGuid()));
+        TestEntity second = new(new TestId(Guid.NewGuid()));
+
+        // Act
+        bool result = first != second;
+
+        // Assert
+        Assert.True(result);
     }
 }
