@@ -47,4 +47,10 @@ jobs:
         run: dotnet restore
       
       - name: Run coverage tests
-        run: dotnet test --configuration Release p:CollectCoverage=true p:CoverletOutputFormat=opencover p:Threshold=97 p:ThresholdType=line '/p:Include="[Howestprime.Movies.Application]*,[Howestprime.Movies.Domain]*"'
+        run: |
+          dotnet test --configuration Release \
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=opencover \
+          /p:Threshold=97 \
+          /p:ThresholdType=line \
+          '/p:Include="[Howestprime.Movies.Application]*,[Howestprime.Movies.Domain]*"'
