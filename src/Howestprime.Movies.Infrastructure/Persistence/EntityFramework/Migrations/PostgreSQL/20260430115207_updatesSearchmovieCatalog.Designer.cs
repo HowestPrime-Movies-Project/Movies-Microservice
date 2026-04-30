@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Howestprime.Movies.Infrastructure.Persistence.EntityFramework.Migrations.PostgreSQL
 {
     [DbContext(typeof(PostgresDomainDbContext))]
-    [Migration("20260428145536_UpdateValueObjects")]
-    partial class UpdateValueObjects
+    [Migration("20260430115207_updatesSearchmovieCatalog")]
+    partial class updatesSearchmovieCatalog
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
