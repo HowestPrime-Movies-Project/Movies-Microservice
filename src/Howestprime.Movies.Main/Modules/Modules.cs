@@ -1,4 +1,5 @@
 using Howestprime.Movies.Main.Modules.Application;
+using Howestprime.Movies.Main.Modules.Authorization;
 using Howestprime.Movies.Main.Modules.Messaging.DomainEvents;
 using Howestprime.Movies.Main.Modules.Messaging.IntegrationEvents;
 using Howestprime.Movies.Main.Modules.Persistence.EntityFramework;
@@ -14,6 +15,7 @@ public static class ModuleExtensions
     )
     {
         return services
+            .AddAuthorizationModule(configuration)
             .AddApplicationModule(configuration)
             .AddDomainEventModule(configuration)
             .AddMessagingModule(configuration)
