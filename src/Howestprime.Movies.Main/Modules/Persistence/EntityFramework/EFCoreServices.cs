@@ -51,6 +51,14 @@ public static class EFCoreServices
                     sp.GetRequiredService<IMovieRepository>()
                 );
                 
+                uow.RegisterRepository(
+                    sp.GetRequiredService<IMovieEventRepository>()
+                );
+                
+                uow.RegisterRepository(
+                    sp.GetRequiredService<IRoomRepository>()
+                );
+                
                 return uow;
             });
     }
@@ -67,7 +75,9 @@ public static class EFCoreServices
     )
     {
         return services
-            .AddScoped<IMovieRepository, MovieRepository>();
+            .AddScoped<IMovieRepository, MovieRepository>()
+            .AddScoped<IMovieEventRepository, MovieEventRepository>()
+            .AddScoped<IRoomRepository, RoomRepository>();
     }
 
     private static IServiceCollection AddQueries(
