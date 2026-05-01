@@ -1,5 +1,6 @@
 using Howestprime.Movies.Domain.Movies;
 using Howestprime.Movies.Domain.Movies.Events;
+using Howestprime.Movies.Domain.Movies.ValueObjects;
 
 namespace UnitTests.Domain.Movies;
 
@@ -211,6 +212,19 @@ public sealed class MovieValueObjectTests
 
         // Assert
         Assert.Equal(2010, releaseYear.Year);
+    }
+
+    [Fact]
+    public void Booking_CopyConstructor_ShouldPreserveValue()
+    {
+        // Arrange
+        Booking original = new();
+
+        // Act
+        Booking copy = original with { };
+
+        // Assert
+        Assert.Equal(original, copy);
     }
 
     [Fact]
