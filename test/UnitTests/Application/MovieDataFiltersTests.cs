@@ -52,4 +52,29 @@ public sealed class MovieDataFiltersTests
 
         Assert.True(predicate(movie));
     }
+
+    [Fact]
+    public void ByTitleAndGenres_WithNullGenres_ShouldNotThrowAndReturnTrue()
+    {
+        var predicate = MovieDataFilters.ByTitleAndGenres(
+            titleContains: "Inception",
+            genres: null
+        ).Compile();
+
+        var movie = new MovieData
+        {
+            Title = "Inception",
+            Description = "A mind-bending thriller",
+            ReleaseYear = 2010,
+            Duration = 148,
+            Genres = new List<GenreData> { new("sci-fi"), new("thriller") },
+            Actors = new List<ActorData>(),
+            AgeRating = 16,
+            PosterUrl = "https://example.com/inception.jpg"
+        };
+
+        var result = predicate(movie);
+
+        Assert.True(result);
+    }
 }
