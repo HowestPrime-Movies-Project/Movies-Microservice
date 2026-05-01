@@ -14,6 +14,7 @@ public static class ApplicationModule
     {
         // Register command use cases
         services.AddScoped<IUseCase<RegisterMovieInput, RegisterMovieOutput>, RegisterMovie>();
+        services.AddScoped<IUseCase<ScheduleMovieEventInput, ScheduleMovieEventOutput>, ScheduleMovieEvent>();
         // Register query use cases
         services.AddScoped<IUseCase<SearchMovieCatalogInput, IReadOnlyList<MovieData>>, SearchMovieCatalog>();
         services.AddScoped<IUseCase<FindMovieByIdInput, MovieData?>, FindMovieById>();
