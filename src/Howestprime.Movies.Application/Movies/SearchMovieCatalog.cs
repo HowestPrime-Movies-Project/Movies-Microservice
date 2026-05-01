@@ -17,14 +17,14 @@ public class SearchMovieCatalog(
 {
     public Task<IReadOnlyList<MovieData>> Execute(SearchMovieCatalogInput input)
     {
-        IList<GenreData> normalizedGenres = NormalizeGenres(input.Genres);
+        List<string> normalizedGenres = NormalizeGenres(input.Genres);
         
         authorizationService.Authorize(input.xUserRole, nameof(SearchMovieCatalog));
         
         return searchMovieCatalogQuery.Fetch(MovieDataFilters.ByTitleAndGenres(input.Title, normalizedGenres));
     }
     
-    public IList<GenreData> NormalizeGenres(string? genres)
+    public List<string> NormalizeGenres(string? genres)
     {
         if (string.IsNullOrWhiteSpace(genres))
         {
@@ -32,7 +32,7 @@ public class SearchMovieCatalog(
         }
 
         return genres.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            .Select(g => new GenreData(g.ToLowerInvariant()))
+            .Select(g => g.ToLowerInvariant())
             .ToList();
     }
 }

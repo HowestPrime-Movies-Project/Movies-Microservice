@@ -14,7 +14,7 @@ public sealed class SearchMovieCatalogTests
         {
             new()
             {
-                Id = 1,
+                Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                 Title = "Inception",
                 Description = "A mind-bending thriller",
                 ReleaseYear = 2010,
@@ -66,7 +66,7 @@ public sealed class SearchMovieCatalogTests
 
         var genres = useCase.NormalizeGenres(" Sci-Fi, Thriller,,  Drama ");
 
-        Assert.Equal(new[] { new GenreData("sci-fi"), new GenreData("thriller"), new GenreData("drama") }, genres);
+        Assert.Equal(new[] { "sci-fi", "thriller", "drama" }, genres);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public sealed class SearchMovieCatalogTests
 
         var movie = new MovieData
         {
-            Id = 42,
+            Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
             Title = input.Title!,
             Description = "A mind-bending thriller",
             ReleaseYear = 2010,
@@ -96,7 +96,7 @@ public sealed class SearchMovieCatalogTests
         Assert.Equal("user", input.xUserRole);
         Assert.Equal("Leonardo DiCaprio", actor.Value);
         Assert.Equal("sci-fi", genre.Value);
-        Assert.Equal(42, movie.Id);
+        Assert.Equal(Guid.Parse("22222222-2222-2222-2222-222222222222"), movie.Id);
         Assert.Equal("Inception", movie.Title);
         Assert.Equal("A mind-bending thriller", movie.Description);
         Assert.Equal(2010, movie.ReleaseYear);
@@ -130,5 +130,3 @@ public sealed class SearchMovieCatalogTests
         }
     }
 }
-
-

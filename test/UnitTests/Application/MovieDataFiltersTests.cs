@@ -10,7 +10,7 @@ public sealed class MovieDataFiltersTests
     {
         var predicate = MovieDataFilters.ByTitleAndGenres(
             titleContains: null,
-            genres: new List<GenreData> { new("sci-fi") }
+            genres: new List<string> { "sci-fi" }
         ).Compile();
 
         var movie = new MovieData
@@ -31,11 +31,11 @@ public sealed class MovieDataFiltersTests
     }
 
     [Fact]
-    public void ByTitleAndGenres_WithMatchingGenres_ShouldReturnTrue()
+    public void ByTitleAndGenres_WithMixedCaseTitleAndGenres_ShouldReturnTrue()
     {
         var predicate = MovieDataFilters.ByTitleAndGenres(
-            titleContains: "Inception",
-            genres: new List<GenreData> { new("sci-fi") }
+            titleContains: "INCEPTION",
+            genres: new List<string> { "SCI-FI" }
         ).Compile();
 
         var movie = new MovieData
