@@ -18,4 +18,9 @@ public static class MovieDataFilters
             &&
             (normalizedGenres == null || normalizedGenres.Count == 0 || (movie.Genres != null && movie.Genres.Any(movieGenre => normalizedGenres.Contains(movieGenre.Value.ToLower()))));
     }
+    
+    public static Expression<Func<MovieData, bool>> ById(string id)
+    {
+        return movie => movie.Id == Guid.Parse(id);
+    }
 }

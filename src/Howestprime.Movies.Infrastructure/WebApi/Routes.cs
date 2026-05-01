@@ -30,6 +30,9 @@ public static class Routes
             .WithName("SearchMovieCatalog")
             .WithDescription("Search the movie catalog by title and genres.");
 
+        movies.MapGet("/{id}", FindMovieByIdController.Invoke)
+            .WithName("FindMovieById")
+            .WithDescription("Find a movie by its id.");
         return movies;
     }
 }

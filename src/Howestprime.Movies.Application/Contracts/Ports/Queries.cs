@@ -11,3 +11,10 @@ public interface ISearchMovieCatalogQuery
         Expression<Func<MovieData, bool>> movieFilter
     );
 }
+
+public interface IFindMovieByIdQuery
+{
+    public Task<MovieData?> Fetch(
+        Expression<Func<MovieData, bool>> movieFilter
+    );
+}

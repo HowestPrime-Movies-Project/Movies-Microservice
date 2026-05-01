@@ -75,7 +75,8 @@ public static class EFCoreServices
     )
     {
         return services
-            .AddScoped<ISearchMovieCatalogQuery, MovieByTitleAndGenresQuery>();
+            .AddScoped<ISearchMovieCatalogQuery, MovieByTitleAndGenresQuery>()
+            .AddScoped<IFindMovieByIdQuery, MovieByIdQuery>();
     }
     
     public static WebApplication ApplyMigrations(this WebApplication app)
