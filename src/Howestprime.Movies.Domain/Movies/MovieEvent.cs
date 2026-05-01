@@ -1,0 +1,55 @@
+using Howestprime.Movies.Domain.Movies.Events;
+using Howestprime.Movies.Domain.Movies.ValueObjects;
+using Howestprime.Movies.Domain.Shared;
+
+namespace Howestprime.Movies.Domain.Movies;
+
+public readonly record struct MovieEventId(Guid Value) : IEntityId;
+
+public class MovieEvent : AggregateRoot<MovieEventId>
+{
+    public MovieId MovieId { get; }
+    public RoomId RoomId { get; }
+    public DateTime ShowTime { get; }
+    public int Capacity { get; }
+    public List<Booking> Bookings { get; }
+    public int Visitors { get; }
+    
+     public MovieEvent(){}
+     
+     private MovieEvent(
+         MovieEventId id,
+         MovieId movieId,
+         RoomId roomId,
+         DateTime showTime,
+         int capacity,
+         List<Booking> bookings,
+         int visitors
+     ) : base(id)
+     {
+         MovieId = movieId;
+         RoomId = roomId;
+         ShowTime = showTime;
+         Capacity = capacity;
+         Bookings = bookings;
+         Visitors = visitors;
+     }
+     
+        public static MovieEvent Create(MovieId movieId, RoomId roomId, DateTime showTime, int capacity)
+        {
+            MovieEventId id = EntityId.New<MovieEventId>();
+            MovieEvent movieEvent = new MovieEvent(id, movieId, roomId, showTime, capacity, new List<Booking>(), 0);
+            movieEvent.ValidateState();
+            movieEvent.RaiseDomainEvent(new MovieEventScheduled(movieEvent.Id, movieEvent.MovieId, movieEvent.RoomId, movieEvent.ShowTime));
+            return movieEvent;
+        }
+    
+    public override void ValidateState()
+    {
+        // The movie must be registered in the db
+        // if the room and showrtime are already scheduled overwrite it
+        MovieEventAssertions.EnsureShowtimeIsAt15hOr19h(ShowTime); 
+        MovieEventAssertions.EnsureShowtimeIsInTheFuture(ShowTime); 
+        Asserts.EnsureGreaterThan(Capacity, 0);
+    }
+}
