@@ -3,6 +3,7 @@ using System;
 using Howestprime.Movies.Infrastructure.Persistence.EntityFramework.Configuration.Vendors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Howestprime.Movies.Infrastructure.Persistence.EntityFramework.Migrations.PostgreSQL
 {
     [DbContext(typeof(PostgresDomainDbContext))]
-    partial class PostgresDomainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501204059_AddMovieEventsAndRooms")]
+    partial class AddMovieEventsAndRooms
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,7 +78,8 @@ namespace Howestprime.Movies.Infrastructure.Persistence.EntityFramework.Migratio
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomId", "ShowTime");
+                    b.HasIndex("RoomId", "ShowTime")
+                        .IsUnique();
 
                     b.ToTable("MovieEvents", (string)null);
                 });

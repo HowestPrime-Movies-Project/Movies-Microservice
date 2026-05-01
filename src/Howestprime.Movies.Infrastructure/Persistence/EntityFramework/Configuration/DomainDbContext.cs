@@ -10,6 +10,8 @@ public abstract class DomainDbContext : DbContext
 {
     private readonly Queue<IDomainEvent> _queuedDomainEvents = new();
     public DbSet<Movie> Movies { get; set; }
+    public DbSet<MovieEvent> MovieEvents { get; set; }
+    public DbSet<Room> Rooms { get; set; }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -22,6 +24,8 @@ public abstract class DomainDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new MovieConfiguration());
+        modelBuilder.ApplyConfiguration(new MovieEventConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 
