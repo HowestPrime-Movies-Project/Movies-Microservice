@@ -1,6 +1,5 @@
 
 using System.Linq.Expressions;
-using Aornis;
 using Howestprime.Movies.Application.Contracts.Data;
 
 namespace Howestprime.Movies.Application.Contracts.Ports;
@@ -17,4 +16,9 @@ public interface IFindMovieByIdQuery
     public Task<MovieData?> Fetch(
         Expression<Func<MovieData, bool>> movieFilter
     );
+}
+
+public interface ISearchMovieEventsInTimeRangeQuery
+{
+    public Task<List<MovieEventData>> Fetch(Expression<Func<MovieEventData, bool>> movieEventFilter);
 }

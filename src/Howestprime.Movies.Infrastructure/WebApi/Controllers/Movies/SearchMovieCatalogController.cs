@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Howestprime.Movies.Application.Contracts.Data;
 using Howestprime.Movies.Application.Contracts.Ports;
 using Howestprime.Movies.Application.Movies;
+using Howestprime.Movies.Infrastructure.WebApi.Controllers.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ public record SearchMovieCatalogRequest(
 
 public static class SearchMovieCatalogController
 {
-    public static async Task<Results<Ok<IReadOnlyList<MovieData>>, BadRequest<string>>> Invoke(
+    public static async Task<Results<Ok<MovieCollection>, BadRequest<string>>> Invoke(
         [AsParameters] SearchMovieCatalogRequest request,
         [FromHeader(Name = "x-user-role"), Required] string xUserRole
     )
@@ -29,7 +30,19 @@ public static class SearchMovieCatalogController
         );
         IReadOnlyList<MovieData> output = await request.useCase.Execute(input);
         
-        return TypedResults.Ok(output);
+        var movies = output.Select(m => new Movie(
+            m.Id,
+            m.Title,
+            m.Description,
+            m.ReleaseYear,
+            m.Duration,
+            m.Genres.Select(g => g.Value).ToList(),
+            m.Actors.Select(a => a.Value).ToList(),
+            m.AgeRating,
+            m.PosterUrl
+        )).ToList();
+        
+        return TypedResults.Ok(new MovieCollection(movies));
     }
     
 }
