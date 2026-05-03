@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Howestprime.Movies.Application.Contracts.Data;
 using Howestprime.Movies.Application.Contracts.Ports;
 using Howestprime.Movies.Application.Movies;
+using Microsoft.Extensions.Logging;
 
 namespace UnitTests.Application;
 
@@ -26,7 +27,8 @@ public sealed class FindMovieByIdTests
 
         var query = new FakeFindMovieByIdQuery(expectedMovie);
         var authorization = new FakeAuthorizationService();
-        var useCase = new FindMovieById(query, authorization);
+        var logger = new TestLogger<FindMovieById>();
+        var useCase = new FindMovieById(query, authorization, logger);
 
         var input = new FindMovieByIdInput(
             Id: "33333333-3333-3333-3333-333333333333",
@@ -53,7 +55,8 @@ public sealed class FindMovieByIdTests
         // Arrange
         var query = new FakeFindMovieByIdQuery(null);
         var authorization = new FakeAuthorizationService();
-        var useCase = new FindMovieById(query, authorization);
+        var logger = new TestLogger<FindMovieById>();
+        var useCase = new FindMovieById(query, authorization, logger);
 
         var input = new FindMovieByIdInput(
             Id: "55555555-5555-5555-5555-555555555555",
@@ -97,5 +100,26 @@ public sealed class FindMovieByIdTests
             Calls.Add((userRole, requestedPermission));
         }
     }
+    
+    private sealed class TestLogger<T> : ILogger<T>
+    {
+        public List<string> Messages { get; } = new();
+
+        public IDisposable BeginScope<TState>(TState state) => NullScope.Instance;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            Messages.Add(formatter(state, exception));
+        }
+
+        private sealed class NullScope : IDisposable
+        {
+            public static NullScope Instance { get; } = new NullScope();
+            public void Dispose() { }
+        }
+    }
+
 }
 

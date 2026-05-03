@@ -1,6 +1,7 @@
 using Howestprime.Movies.Application.Contracts.Data;
 using Howestprime.Movies.Application.Contracts.Data.Filters;
 using Howestprime.Movies.Application.Contracts.Ports;
+using Microsoft.Extensions.Logging;
 
 namespace Howestprime.Movies.Application.Movies;
 
@@ -14,7 +15,8 @@ public sealed record SearchMovieEventsInTimeRangeOutput(
     );
 
 public class SearchMovieEventsInTimeRange(
-    ISearchMovieEventsInTimeRangeQuery searchMovieEventsInTimeRangeQuery
+    ISearchMovieEventsInTimeRangeQuery searchMovieEventsInTimeRangeQuery,
+    ILogger<SearchMovieEventsInTimeRange> logger
     ) : IUseCase<SearchMovieEventsInTimeRangeInput, List<MovieEventData>>
 {
     public async Task<List<MovieEventData>> Execute(SearchMovieEventsInTimeRangeInput input)
@@ -24,6 +26,7 @@ public class SearchMovieEventsInTimeRange(
 
         ValidateTimeRange(fromDate, toDate);
 
+        logger.LogInformation("Searching for movie events between {FromDate} and {ToDate}.", fromDate, toDate);
         return await searchMovieEventsInTimeRangeQuery.Fetch(MovieEventDataFilters.ByTimeRange(fromDate, toDate));
     }
 

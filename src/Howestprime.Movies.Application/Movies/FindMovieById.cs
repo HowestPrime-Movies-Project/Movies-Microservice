@@ -1,6 +1,7 @@
 using Howestprime.Movies.Application.Contracts.Data;
 using Howestprime.Movies.Application.Contracts.Data.Filters;
 using Howestprime.Movies.Application.Contracts.Ports;
+using Microsoft.Extensions.Logging;
 
 namespace Howestprime.Movies.Application.Movies;
 
@@ -11,8 +12,9 @@ public sealed record FindMovieByIdInput(
 
 public class FindMovieById(
     IFindMovieByIdQuery findMovieByIdQuery,
-    IAuthorizationService authorizationService
-    ) : IUseCase<FindMovieByIdInput, MovieData?>
+    IAuthorizationService authorizationService,
+    ILogger<FindMovieById> logger
+        ) : IUseCase<FindMovieByIdInput, MovieData?>
 {
     public Task<MovieData?> Execute(FindMovieByIdInput input)
     {

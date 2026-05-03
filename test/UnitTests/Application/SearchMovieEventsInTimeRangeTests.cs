@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Howestprime.Movies.Application.Contracts.Data;
 using Howestprime.Movies.Application.Contracts.Ports;
 using Howestprime.Movies.Application.Movies;
+using Microsoft.Extensions.Logging;
 
 namespace UnitTests.Application;
 
@@ -11,7 +12,8 @@ public sealed class SearchMovieEventsInTimeRangeTests
     public async Task Execute_WhenDatesAreMissing_ShouldDefaultBothToNow()
     {
         var query = new FakeSearchMovieEventsInTimeRangeQuery(Array.Empty<MovieEventData>());
-        var useCase = new SearchMovieEventsInTimeRange(query);
+        var logger = new TestLogger<SearchMovieEventsInTimeRange>();
+        var useCase = new SearchMovieEventsInTimeRange(query, logger);
 
         DateTime before = DateTime.Now.ToUniversalTime();
 
@@ -33,7 +35,8 @@ public sealed class SearchMovieEventsInTimeRangeTests
     public async Task Execute_WhenFromDateIsAfterToDate_ShouldThrow()
     {
         var query = new FakeSearchMovieEventsInTimeRangeQuery(Array.Empty<MovieEventData>());
-        var useCase = new SearchMovieEventsInTimeRange(query);
+        var logger = new TestLogger<SearchMovieEventsInTimeRange>();
+        var useCase = new SearchMovieEventsInTimeRange(query, logger);
 
         var input = new SearchMovieEventsInTimeRangeInput(
             FromDate: DateTime.Now.AddDays(1),
@@ -70,7 +73,8 @@ public sealed class SearchMovieEventsInTimeRangeTests
         };
 
         var query = new FakeSearchMovieEventsInTimeRangeQuery(expectedMovies);
-        var useCase = new SearchMovieEventsInTimeRange(query);
+        var logger = new TestLogger<SearchMovieEventsInTimeRange>();
+        var useCase = new SearchMovieEventsInTimeRange(query, logger);
 
         var input = new SearchMovieEventsInTimeRangeInput(
             FromDate: DateTime.Now.AddDays(-1),
@@ -132,6 +136,27 @@ public sealed class SearchMovieEventsInTimeRangeTests
             return Task.FromResult(result as List<MovieEventData> ?? result.ToList());
         }
     }
+    
+    private sealed class TestLogger<T> : ILogger<T>
+    {
+        public List<string> Messages { get; } = new();
+
+        public IDisposable BeginScope<TState>(TState state) => NullScope.Instance;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            Messages.Add(formatter(state, exception));
+        }
+
+        private sealed class NullScope : IDisposable
+        {
+            public static NullScope Instance { get; } = new NullScope();
+            public void Dispose() { }
+        }
+    }
+
 }
 
 

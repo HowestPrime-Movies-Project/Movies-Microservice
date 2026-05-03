@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Howestprime.Movies.Application.Contracts.Data;
 using Howestprime.Movies.Application.Contracts.Ports;
 using Howestprime.Movies.Application.Movies;
+using Microsoft.Extensions.Logging;
 
 namespace UnitTests.Application;
 
@@ -28,7 +29,8 @@ public sealed class SearchMovieCatalogTests
 
         var query = new FakeSearchMovieCatalogQuery(expectedMovies);
         var authorization = new FakeAuthorizationService();
-        var useCase = new SearchMovieCatalog(query, authorization);
+        var logger = new TestLogger<SearchMovieCatalog>();
+        var useCase = new SearchMovieCatalog(query, authorization, logger);
 
         var input = new SearchMovieCatalogInput(
             Title: "Inception",
@@ -62,7 +64,8 @@ public sealed class SearchMovieCatalogTests
     [Fact]
     public void NormalizeGenres_WithCommaSeparatedValues_ShouldTrimLowercaseAndRemoveEmptyEntries()
     {
-        var useCase = new SearchMovieCatalog(new FakeSearchMovieCatalogQuery(Array.Empty<MovieData>()), new FakeAuthorizationService());
+        var logger = new TestLogger<SearchMovieCatalog>();
+        var useCase = new SearchMovieCatalog(new FakeSearchMovieCatalogQuery(Array.Empty<MovieData>()), new FakeAuthorizationService(), logger);
 
         var genres = useCase.NormalizeGenres(" Sci-Fi, Thriller,,  Drama ");
 
@@ -129,4 +132,25 @@ public sealed class SearchMovieCatalogTests
             Calls.Add((userRole, requestedPermission));
         }
     }
+    
+    private sealed class TestLogger<T> : ILogger<T>
+    {
+        public List<string> Messages { get; } = new();
+
+        public IDisposable BeginScope<TState>(TState state) => NullScope.Instance;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            Messages.Add(formatter(state, exception));
+        }
+
+        private sealed class NullScope : IDisposable
+        {
+            public static NullScope Instance { get; } = new NullScope();
+            public void Dispose() { }
+        }
+    }
+
 }
