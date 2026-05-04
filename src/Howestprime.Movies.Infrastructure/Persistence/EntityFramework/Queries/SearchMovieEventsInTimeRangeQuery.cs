@@ -12,6 +12,8 @@ public class SearchMovieEventsInTimeRangeQuery(QueryDbContext ctx) : ISearchMovi
     {
         return ctx.MovieEvents
             .Where(movieEventFilter)
+            .Include(m => m.Room)
+            .Include(m => m.Movie)
             .ToListAsync();
     }
 }

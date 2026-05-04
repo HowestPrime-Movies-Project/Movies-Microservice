@@ -8,6 +8,7 @@ public abstract class QueryDbContext : DbContext
 {
     public DbSet<MovieData> Movies { get; set; }
     public DbSet<MovieEventData> MovieEvents { get; set; }
+    public DbSet<RoomData> Rooms { get; set; }
     
     protected QueryDbContext()
     {
@@ -18,6 +19,7 @@ public abstract class QueryDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new MovieDataConfiguration());
         modelBuilder.ApplyConfiguration(new MovieEventDataConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomDataConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -48,6 +48,11 @@ public static class Routes
             .WithName("ScheduleMovieEvent")
             .WithDescription("Schedule a new movie event.");
         
+        movieEvents.MapGet("/", SearchMovieEventsInSpecificMonthOfYearController.Invoke)
+            .WithName("SearchMovieEventsInSpecificMonthOfYear")
+            .WithDescription("Get The movie schedule for a specific month of a specific year.");
+
+        
         return movieEvents;
     }
     
@@ -61,6 +66,7 @@ public static class Routes
             .WithName("SearchMovieEventsInTimeRange")
             .WithDescription("Get The movie schedule for the next 14 days.");
         
+
         return movieEvents;
     }
 }

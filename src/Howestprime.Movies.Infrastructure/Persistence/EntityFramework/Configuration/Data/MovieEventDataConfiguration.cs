@@ -2,6 +2,8 @@ using Howestprime.Movies.Application.Contracts.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+namespace Howestprime.Movies.Infrastructure.Persistence.EntityFramework.Configuration.Data;
+
 public class MovieEventDataConfiguration : IEntityTypeConfiguration<MovieEventData>
 {
     public void Configure(EntityTypeBuilder<MovieEventData> builder)
