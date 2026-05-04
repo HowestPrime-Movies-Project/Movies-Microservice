@@ -46,8 +46,6 @@ public class MovieEvent : AggregateRoot<MovieEventId>
     
     public override void ValidateState()
     {
-        // The movie must be registered in the db
-        // if the room and showrtime are already scheduled overwrite it
         MovieEventAssertions.EnsureShowtimeIsAt15hOr19h(ShowTime); 
         MovieEventAssertions.EnsureShowtimeIsInTheFuture(ShowTime); 
         Asserts.EnsureGreaterThan(Capacity, 0);
