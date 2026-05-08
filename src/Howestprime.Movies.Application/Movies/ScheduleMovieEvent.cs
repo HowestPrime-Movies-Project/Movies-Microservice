@@ -23,6 +23,9 @@ public sealed class ScheduleMovieEvent(
 {
     public async Task<ScheduleMovieEventOutput> Execute(ScheduleMovieEventInput input)
     {
+        
+        DateTime universalTime = input.showTime.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(input.showTime, DateTimeKind.Utc) : input.showTime.ToUniversalTime();
+ 
         // Validate input
         if (!Guid.TryParse(input.movieId, out Guid movieIdGuid))
             throw new ArgumentException("Invalid movie ID format.", nameof(input.movieId));
@@ -41,13 +44,13 @@ public sealed class ScheduleMovieEvent(
 
         // Check if room exists
         IRoomRepository roomRepository = uow.Repo<IRoomRepository>();
-        bool roomExists = await roomRepository.Exists(roomId);
-        if (!roomExists)
+        Optional<Room> roomOptional = await roomRepository.ById(roomId);
+        if (!roomOptional.HasValue)
             throw new InvalidOperationException($"Room with ID {roomId.Value} not found.");
 
         // Check if showtime and room are already booked
         IMovieEventRepository movieEventRepository = uow.Repo<IMovieEventRepository>();
-        var existingEvent = await movieEventRepository.GetByShowtimeAndRoomId(input.showTime, roomId);
+        var existingEvent = await movieEventRepository.GetByShowtimeAndRoomId(universalTime, roomId);
         
         MovieEvent movieEvent;
         
@@ -55,12 +58,12 @@ public sealed class ScheduleMovieEvent(
         {
             // Overwrite: Remove the old event and create a new one
             await movieEventRepository.Remove(existingEvent);
-            movieEvent = MovieEvent.Create(movieId, roomId, input.showTime, input.capacity);
+            movieEvent = MovieEvent.Create(movieId, roomId, universalTime, roomOptional.Value.Capacity);
         }
         else
         {
             // Create new movie event
-            movieEvent = MovieEvent.Create(movieId, roomId, input.showTime, input.capacity);
+            movieEvent = MovieEvent.Create(movieId, roomId, universalTime, roomOptional.Value.Capacity);
         }
         
         // Save the movie event
@@ -68,7 +71,7 @@ public sealed class ScheduleMovieEvent(
         await uow.Do();
 
         logger.LogInformation("Movie event with ID {MovieEventId} scheduled successfully for movie {MovieId} in room {RoomId} at {ShowTime}.", 
-            movieEvent.Id.Value, movieId.Value, roomId.Value, input.showTime);
+            movieEvent.Id.Value, movieId.Value, roomId.Value, universalTime);
 
         return new ScheduleMovieEventOutput(movieEvent.Id.Value.ToString());
     }

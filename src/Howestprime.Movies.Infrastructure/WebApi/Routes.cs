@@ -40,7 +40,7 @@ public static class Routes
     
     private static RouteGroupBuilder MapMovieEventRoutes(this IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder movieEvents = app.MapGroup("/movies-events")
+        RouteGroupBuilder movieEvents = app.MapGroup("/movie-events")
             .WithTags("Movie Events")
             .WithDescription("All endpoints related to managing movie events.");
         

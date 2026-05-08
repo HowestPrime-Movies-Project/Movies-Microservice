@@ -37,6 +37,7 @@ public class MovieEvent : AggregateRoot<MovieEventId>
      
         public static MovieEvent Create(MovieId movieId, RoomId roomId, DateTime showTime, int capacity)
         {
+            // convert the showTime to UTC
             MovieEventId id = EntityId.New<MovieEventId>();
             MovieEvent movieEvent = new MovieEvent(id, movieId, roomId, showTime, capacity, new List<Booking>(), 0);
             movieEvent.ValidateState();
