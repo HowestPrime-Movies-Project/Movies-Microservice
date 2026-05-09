@@ -14,8 +14,7 @@ public record ScheduleMovieEventRequest(
 public record ScheduleMovieEventBody(
     [Required] string movieId,
     [Required] string roomId,
-    [Required] DateTime showTime,
-    [Required] int capacity
+    [Required] DateTime showTime
 );
 
 public static class ScheduleMovieEventController
@@ -27,9 +26,8 @@ public static class ScheduleMovieEventController
         ScheduleMovieEventInput input = new(
             request.body.movieId,
             request.body.roomId,
-            request.body.showTime,
-            request.body.capacity
-        );
+            request.body.showTime
+            );
 
         ScheduleMovieEventOutput output = await request.useCase.Execute(input);
 

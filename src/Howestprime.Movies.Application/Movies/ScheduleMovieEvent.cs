@@ -8,8 +8,7 @@ namespace Howestprime.Movies.Application.Movies;
 public sealed record ScheduleMovieEventInput(
     string movieId,
     string roomId,
-    DateTime showTime,
-    int capacity
+    DateTime showTime
 );
 
 public sealed record ScheduleMovieEventOutput(
