@@ -15,7 +15,7 @@ public sealed class ScheduleMovieEventTests
         // Arrange
         var movieId = Guid.NewGuid();
         var roomId = Guid.NewGuid();
-        var showTime = DateTime.Now.AddDays(1).Date.AddHours(15);
+        var showTime = DateTime.UtcNow.AddDays(1).Date.AddHours(15);
         
         var uow = new FakeUnitOfWork();
         var logger = new TestLogger<ScheduleMovieEvent>();
@@ -24,8 +24,7 @@ public sealed class ScheduleMovieEventTests
         var input = new ScheduleMovieEventInput(
             movieId: movieId.ToString(),
             roomId: roomId.ToString(),
-            showTime: showTime,
-            capacity: 100
+            showTime: showTime
         );
 
         // Act
@@ -51,8 +50,7 @@ public sealed class ScheduleMovieEventTests
         var input = new ScheduleMovieEventInput(
             movieId: "not-a-guid",
             roomId: Guid.NewGuid().ToString(),
-            showTime: DateTime.Now.AddDays(1),
-            capacity: 100
+            showTime: DateTime.UtcNow.AddDays(1)
         );
 
         // Act & Assert
@@ -70,8 +68,7 @@ public sealed class ScheduleMovieEventTests
         var input = new ScheduleMovieEventInput(
             movieId: Guid.NewGuid().ToString(),
             roomId: "not-a-guid",
-            showTime: DateTime.Now.AddDays(1),
-            capacity: 100
+            showTime: DateTime.UtcNow.AddDays(1)
         );
 
         // Act & Assert
@@ -93,8 +90,7 @@ public sealed class ScheduleMovieEventTests
         var input = new ScheduleMovieEventInput(
             movieId: movieId.ToString(),
             roomId: roomId.ToString(),
-            showTime: DateTime.Now.AddDays(1),
-            capacity: 100
+            showTime: DateTime.UtcNow.AddDays(1)
         );
 
         // Act & Assert
@@ -117,8 +113,7 @@ public sealed class ScheduleMovieEventTests
         var input = new ScheduleMovieEventInput(
             movieId: movieId.ToString(),
             roomId: roomId.ToString(),
-            showTime: DateTime.Now.AddDays(1),
-            capacity: 100
+            showTime: DateTime.UtcNow.AddDays(1)
         );
 
         // Act & Assert
@@ -131,8 +126,8 @@ public sealed class ScheduleMovieEventTests
         // Arrange
         var movieId = Guid.NewGuid();
         var roomId = Guid.NewGuid();
-        var showTime = DateTime.Now.AddDays(2).Date.AddHours(15);
-        var pastShowTime = DateTime.Now.AddDays(1).Date.AddHours(15);
+        var showTime = DateTime.UtcNow.AddDays(2).Date.AddHours(15);
+        var pastShowTime = DateTime.UtcNow.AddDays(1).Date.AddHours(15);
 
         var existingEvent = MovieEvent.Create(new MovieId(Guid.NewGuid()), new RoomId(Guid.NewGuid()), pastShowTime, 100);
         var uow = new FakeUnitOfWork();
@@ -146,8 +141,7 @@ public sealed class ScheduleMovieEventTests
         var input = new ScheduleMovieEventInput(
             movieId: movieId.ToString(),
             roomId: roomId.ToString(),
-            showTime: showTime,
-            capacity: 150
+            showTime: showTime
         );
 
         // Act
@@ -166,7 +160,7 @@ public sealed class ScheduleMovieEventTests
         // Arrange
         var movieId = Guid.NewGuid();
         var roomId = Guid.NewGuid();
-        var showTime = DateTime.Now.AddDays(1).Date.AddHours(19);
+        var showTime = DateTime.UtcNow.AddDays(1).Date.AddHours(19);
 
         var uow = new FakeUnitOfWork();
         var logger = new TestLogger<ScheduleMovieEvent>();
@@ -175,8 +169,7 @@ public sealed class ScheduleMovieEventTests
         var input = new ScheduleMovieEventInput(
             movieId: movieId.ToString(),
             roomId: roomId.ToString(),
-            showTime: showTime,
-            capacity: 100
+            showTime: showTime
         );
 
         // Act
@@ -184,6 +177,33 @@ public sealed class ScheduleMovieEventTests
 
         // Assert
         Assert.True(Guid.TryParse(output.movieEventId, out _));
+    }
+
+    [Fact]
+    public async Task Execute_WithUnspecifiedShowtimeKind_ShouldTreatInputAsUtc()
+    {
+        // Arrange
+        var movieId = Guid.NewGuid();
+        var roomId = Guid.NewGuid();
+        var showTime = DateTime.SpecifyKind(DateTime.UtcNow.AddDays(1).Date.AddHours(15), DateTimeKind.Unspecified);
+
+        var uow = new FakeUnitOfWork();
+        var logger = new TestLogger<ScheduleMovieEvent>();
+        var useCase = new ScheduleMovieEvent(uow, logger);
+
+        var input = new ScheduleMovieEventInput(
+            movieId: movieId.ToString(),
+            roomId: roomId.ToString(),
+            showTime: showTime
+        );
+
+        // Act
+        var output = await useCase.Execute(input);
+
+        // Assert
+        Assert.True(Guid.TryParse(output.movieEventId, out _));
+        Assert.True(uow.SaveCalled);
+        Assert.True(uow.DoCalled);
     }
 
     // Test doubles
@@ -232,7 +252,16 @@ public sealed class ScheduleMovieEventTests
         Task<bool> IRepository<MovieEvent, MovieEventId>.Exists(MovieEventId id) => Task.FromResult(false);
 
         Task<Aornis.Optional<Movie>> IRepository<Movie, MovieId>.ById(MovieId id) => throw new NotImplementedException();
-        Task<Aornis.Optional<Room>> IRepository<Room, RoomId>.ById(RoomId id) => throw new NotImplementedException();
+        Task<Aornis.Optional<Room>> IRepository<Room, RoomId>.ById(RoomId id)
+        {
+            if (!_uow.RoomExists)
+            {
+                return Task.FromResult(Optional.Of<Room>(null));
+            }
+
+            Room room = Room.Create("Test room", 150, id);
+            return Task.FromResult(Optional.Of(room));
+        }
         Task<Aornis.Optional<MovieEvent>> IRepository<MovieEvent, MovieEventId>.ById(MovieEventId id) => throw new NotImplementedException();
 
         Task IRepository<Movie, MovieId>.Save(Movie aggregateRoot) => Task.CompletedTask;
