@@ -21,7 +21,7 @@ public class BookMovieEvent(
 {
     public async Task<BookMovieEventOutput> Execute(BookMovieEventInput input)
     {
-        if (Guid.TryParse(input.movieEventId, out Guid movieEventIdGuid)) throw new ArgumentException("Invalid movie event ID format.", nameof(input.movieEventId));
+        if (!Guid.TryParse(input.movieEventId, out Guid movieEventIdGuid)) throw new ArgumentException("Invalid movie event ID format.", nameof(input.movieEventId));
         MovieEventId movieEventId = new(movieEventIdGuid);
 
         IMovieEventRepository movieEventRepository = uow.Repo<IMovieEventRepository>();

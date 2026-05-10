@@ -56,7 +56,7 @@ public class MovieEvent : AggregateRoot<MovieEventId>
     public Booking Book(int standardVisitors, int discountVisitors, string? roomName = null) 
     { 
         int totalVisitors = Visitors + standardVisitors + discountVisitors; 
-        if (standardVisitors + discountVisitors <= 0) throw new InvalidOperationException("The number of visitors must be greater than 0.");
+        if (standardVisitors + discountVisitors <= 0) throw new InvalidOperationException("The total number of visitors must be greater than 0.");
         if (totalVisitors > Capacity) throw new InvalidOperationException("Cannot book more visitors than the capacity of the movie event."); 
 
         if (ShowTime > DateTime.UtcNow.AddDays(14))

@@ -47,6 +47,6 @@ public sealed class Booking : Entity<BookingId>
     {
         if (StandardVisitors < 0) throw new ArgumentException("Standard visitors cannot be negative.");
         if (DiscountVisitors < 0) throw new ArgumentException("Discount visitors cannot be negative.");
-        if (0 != StandardVisitors + DiscountVisitors) throw new ArgumentException("The number of visitors must be greater than 0.");
+        if (0 >= StandardVisitors + DiscountVisitors) throw new ArgumentException("The total number of visitors must be greater than 0.");
     }
 }
