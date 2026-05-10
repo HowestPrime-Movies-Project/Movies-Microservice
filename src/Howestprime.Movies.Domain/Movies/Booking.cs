@@ -30,10 +30,11 @@ public sealed class Booking : Entity<BookingId>
         DiscountVisitors = discountVisitors;
         SeatNumbers = seatNumbers;
     }
-    
+
     public static Booking Create(
         int standardVisitors,
-        int discountVisitors
+        int discountVisitors,
+        List<string> seatNumbers
         )
     {
         BookingId id = EntityId.New<BookingId>();
@@ -41,7 +42,7 @@ public sealed class Booking : Entity<BookingId>
         booking.ValidateState();
         return booking;
     }
-    
+
     public override void ValidateState()
     {
         if (StandardVisitors < 0) throw new ArgumentException("Standard visitors cannot be negative.");

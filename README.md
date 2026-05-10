@@ -11,3 +11,7 @@
 - [ ] FR07
 - [ ] FR08
 - [ ] FR09
+
+# Useful Links
+- [Swagger](http://localhost:8000/swagger/)
+- [LavinMQ](http://localhost:15672/)

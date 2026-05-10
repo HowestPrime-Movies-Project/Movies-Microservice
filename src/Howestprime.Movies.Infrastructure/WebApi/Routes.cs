@@ -1,3 +1,4 @@
+using Howestprime.Movies.Infrastructure.WebApi.Controllers;
 using Howestprime.Movies.Infrastructure.WebApi.Controllers.Movies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -52,6 +53,9 @@ public static class Routes
             .WithName("SearchMovieEventsInSpecificMonthOfYear")
             .WithDescription("Get The movie schedule for a specific month of a specific year.");
 
+        movieEvents.MapPost("/{movieEventId}/bookings", BookMovieEventController.Invoke)
+            .WithName("BookMovieEvent")
+            .WithDescription("Book a movie event by its id.");
         
         return movieEvents;
     }

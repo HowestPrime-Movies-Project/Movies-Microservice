@@ -1,5 +1,4 @@
 using Howestprime.Movies.Domain.Movies.Events;
-using Howestprime.Movies.Domain.Movies.ValueObjects;
 using Howestprime.Movies.Domain.Shared;
 
 namespace Howestprime.Movies.Domain.Movies;
@@ -12,7 +11,7 @@ public class MovieEvent : AggregateRoot<MovieEventId>
     public RoomId RoomId { get; } 
     public DateTime ShowTime { get; } 
     public int Capacity { get; } 
-    public List<Booking> Bookings { get; } 
+    public List<Booking> Bookings { get; } = [];
     public int Visitors { get; private set; }
     
     public MovieEvent(){}
@@ -54,14 +53,23 @@ public class MovieEvent : AggregateRoot<MovieEventId>
         
     }
     
-    public Booking Book(int standardVisitors, int discountVisitors) 
+    public Booking Book(int standardVisitors, int discountVisitors, string? roomName = null) 
     { 
-        Booking booking = Booking.Create(standardVisitors, discountVisitors); 
         int totalVisitors = Visitors + standardVisitors + discountVisitors; 
+        if (standardVisitors + discountVisitors <= 0) throw new InvalidOperationException("The number of visitors must be greater than 0.");
         if (totalVisitors > Capacity) throw new InvalidOperationException("Cannot book more visitors than the capacity of the movie event."); 
+
+        if (ShowTime > DateTime.UtcNow.AddDays(14))
+            throw new InvalidOperationException("Cannot book movie events scheduled more than 14 days in advance.");
+
+        List<string> seatNumbers = Enumerable.Range(2, standardVisitors + discountVisitors)
+            .Select(seatNumber => seatNumber.ToString())
+            .ToList();
+
+        Booking booking = Booking.Create(standardVisitors, discountVisitors, seatNumbers); 
         Bookings.Add(booking); 
         Visitors = totalVisitors; 
-        RaiseDomainEvent(new BookingOpened(booking.Id, MovieId, RoomId.Value.ToString(), ShowTime.ToString("o"), standardVisitors, discountVisitors, new List<string>())); 
+        RaiseDomainEvent(new BookingOpened(booking.Id, MovieId, roomName ?? RoomId.Value.ToString(), ShowTime.ToString("o"), standardVisitors, discountVisitors, seatNumbers)); 
         return booking; 
     }
 }
