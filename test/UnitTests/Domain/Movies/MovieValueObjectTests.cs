@@ -1,6 +1,5 @@
 using Howestprime.Movies.Domain.Movies;
 using Howestprime.Movies.Domain.Movies.Events;
-using Howestprime.Movies.Domain.Movies.ValueObjects;
 
 namespace UnitTests.Domain.Movies;
 
@@ -221,7 +220,7 @@ public sealed class MovieValueObjectTests
         Booking original = new();
 
         // Act
-        Booking copy = original with { };
+        Booking copy = original;
 
         // Assert
         Assert.Equal(original, copy);

@@ -17,7 +17,7 @@ public sealed class MovieEventTests
         Assert.Null(movieEvent.RoomId.Value == Guid.Empty ? null : movieEvent.RoomId);
         Assert.Equal(default(DateTime), movieEvent.ShowTime);
         Assert.Equal(0, movieEvent.Capacity);
-        Assert.Null(movieEvent.Bookings);
+        Assert.Empty(movieEvent.Bookings);
         Assert.Equal(0, movieEvent.Visitors);
         Assert.Empty(movieEvent.DomainEvents);
     }
