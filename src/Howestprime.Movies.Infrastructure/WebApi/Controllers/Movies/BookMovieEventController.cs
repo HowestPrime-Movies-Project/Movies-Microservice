@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Howestprime.Movies.Application.Contracts.Ports;
 using Howestprime.Movies.Application.Movies;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Howestprime.Movies.Infrastructure.WebApi.Controllers;
+namespace Howestprime.Movies.Infrastructure.WebApi.Controllers.Movies;
 
 public record BookMovieEventRequest(
     [FromRoute] string movieEventId,

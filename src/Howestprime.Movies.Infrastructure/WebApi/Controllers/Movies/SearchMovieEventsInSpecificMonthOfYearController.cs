@@ -40,23 +40,26 @@ public static class SearchMovieEventsInSpecificMonthOfYearController
     {
         if (output.Count == 0) return new HowestprimeSchedule(new List<Guid>(), new List<MovieEvent>());
         
-        var movieEvents = output.Select(m => new MovieEvent(
-            m.Id,
-            m.ShowTime,
-            m.Capacity,
-            new Room(m.Room.Id, m.Room.Name, m.Room.Capacity),
-            new Movie(
-                m.Movie.Id,
-                m.Movie.Title,
-                m.Movie.Description,
-                m.Movie.ReleaseYear,
-                m.Movie.Duration,
-                m.Movie.Genres.Select(g => g.Value).ToList(),
-                m.Movie.Actors.Select(a => a.Value).ToList(),
-                m.Movie.AgeRating,
-                m.Movie.PosterUrl
-            )
-        )).ToList();
+        var movieEvents = output
+            .OrderBy(m => m.Room.Name)
+            .ThenBy(m => m.ShowTime)
+            .Select(m => new MovieEvent(
+                m.Id,
+                m.ShowTime,
+                m.Capacity,
+                new Room(m.Room.Id, m.Room.Name, m.Room.Capacity),
+                new Movie(
+                    m.Movie.Id,
+                    m.Movie.Title,
+                    m.Movie.Description,
+                    m.Movie.ReleaseYear,
+                    m.Movie.Duration,
+                    m.Movie.Genres.Select(g => g.Value).ToList(),
+                    m.Movie.Actors.Select(a => a.Value).ToList(),
+                    m.Movie.AgeRating,
+                    m.Movie.PosterUrl
+                )
+            )).ToList();
 
         return new HowestprimeSchedule(
             output.Select(m => m.Movie.Id).Distinct().ToList(),
