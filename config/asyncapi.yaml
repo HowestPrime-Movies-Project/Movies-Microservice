@@ -69,6 +69,18 @@ channels:
           type: topic
           routingKey: howestprime.movies.movieevent.bookingopened
 
+  MovieDetailsChanged:
+    messages:
+      MovieDetailsChanged:
+        $ref: '#/components/messages/MovieDetailsChanged'
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: howestprime
+          type: topic
+          routingKey: howestprime.movies.movie.moviedetailschanged
+
 operations:
   # Receive operations
   WhenPaymentFailedCloseBooking:
@@ -103,6 +115,14 @@ operations:
     description: Publishes a BookingOpened event when booking opens for a movie event.
     messages:
       - $ref: '#/channels/BookingOpened/messages/BookingOpened'
+
+  MovieDetailsChanged:
+    action: send
+    channel:
+      $ref: '#/channels/MovieDetailsChanged'
+    description: Publishes a MovieDetailsChanged event when movie details are updated.
+    messages:
+      - $ref: '#/channels/MovieDetailsChanged/messages/MovieDetailsChanged'
 
 components:
   messages:
@@ -202,3 +222,37 @@ components:
             format: uuid
         required:
           - bookingId
+
+    MovieDetailsChanged:
+      name: MovieDetailsChanged
+      title: Movie Details Changed
+      summary: Indicates the details of a movie have been changed.
+      payload:
+        type: object
+        properties:
+          movieId:
+            type: string
+            format: uuid
+          title:
+            type: string
+          poster:
+            type: string
+          releaseYear:
+            type: integer
+          duration:
+            type: integer
+          genres:
+            type: string
+          actors:
+            type: string
+          ageRating:
+            type: integer
+        required:
+          - movieId
+          - title
+          - poster
+          - releaseYear
+          - duration
+          - genres
+          - actors
+          - ageRating

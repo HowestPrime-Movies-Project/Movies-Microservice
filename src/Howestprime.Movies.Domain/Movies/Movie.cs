@@ -7,14 +7,14 @@ public readonly record struct MovieId(Guid Value) : IEntityId;
 
 public class Movie : AggregateRoot<MovieId>
 {
-    public string Title { get; }
-    public string Description { get; }
-    public ReleaseYear ReleaseYear { get; }
-    public Duration Duration { get; }
-    public IReadOnlyList<Genre> Genres { get; }
-    public IReadOnlyList<Actor> Actors { get; }
-    public AgeRating AgeRating { get; }
-    public PosterUrl PosterUrl { get; }
+    public string Title { get; private set; }
+    public string Description { get; private set; }
+    public ReleaseYear ReleaseYear { get; private set; }
+    public Duration Duration { get; private set; }
+    public IReadOnlyList<Genre> Genres { get; private set; }
+    public IReadOnlyList<Actor> Actors { get; private set; }
+    public AgeRating AgeRating { get; private set; }
+    public PosterUrl PosterUrl { get; private set; }
 
     public Movie(){}
     private Movie(
@@ -29,7 +29,6 @@ public class Movie : AggregateRoot<MovieId>
         PosterUrl posterUrl
     ) : base(id: id)
     {
-        
         Title = title;
         Description = description;
         ReleaseYear = releaseYear;
@@ -54,6 +53,31 @@ public class Movie : AggregateRoot<MovieId>
         return movie;
     }
 
+    public void ChangeDetails(string title, string description, ReleaseYear releaseYear, Duration duration, List<Genre> genres, List<Actor> actors, AgeRating ageRating, PosterUrl posterUrl)
+    {
+        Title = title;
+        Description = description;
+        ReleaseYear = releaseYear;
+        Duration = duration;
+        Genres = genres;
+        Actors = actors;
+        AgeRating = ageRating;
+        PosterUrl = posterUrl;
+
+        ValidateState();
+
+        RaiseDomainEvent(new MovieDetailsChanged(
+            Id,
+            title,
+            posterUrl.Url,
+            releaseYear.Year,
+            duration.Runtime,
+            string.Join(",", genres.Select(g => g.Value)),
+            string.Join(",", actors.Select(a => a.Value)),
+            ageRating.Age
+        ));
+    }
+
     public override void ValidateState()
     {
         Asserts.EnsureNotEmpty(Title);
@@ -64,4 +88,3 @@ public class Movie : AggregateRoot<MovieId>
         Asserts.EnsureLessThanOrEqual(ReleaseYear.Year, DateTime.Now.Year);
     }
 }
-

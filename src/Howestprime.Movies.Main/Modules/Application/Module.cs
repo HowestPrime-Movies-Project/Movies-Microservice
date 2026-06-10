@@ -17,6 +17,7 @@ public static class ApplicationModule
         services.AddScoped<IUseCase<ScheduleMovieEventInput, ScheduleMovieEventOutput>, ScheduleMovieEvent>();
         services.AddScoped<IUseCase<BookMovieEventInput, BookMovieEventOutput>, BookMovieEvent>();
         services.AddScoped<IUseCase<CloseBookingInput>, CloseBooking>();
+        services.AddScoped<IUseCase<ChangeMovieDetailsInput>, ChangeMovieDetails>();
         // Register query use cases
         services.AddScoped<IUseCase<SearchMovieCatalogInput, IReadOnlyList<MovieData>>, SearchMovieCatalog>();
         services.AddScoped<IUseCase<FindMovieByIdInput, MovieData?>, FindMovieById>();
