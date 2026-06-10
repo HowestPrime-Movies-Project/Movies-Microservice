@@ -22,5 +22,12 @@ public class MovieEventRepository(
             .Set<MovieEvent>()
             .FirstOrDefaultAsync(me => me.ShowTime == showTime && me.RoomId.Equals(roomId));
     }
+
+    public async Task<Optional<MovieEvent>> GetByBookingId(BookingId bookingId)
+    {
+        return Optional.Of(await _context
+            .Set<MovieEvent>()
+            .FirstOrDefaultAsync(me => me.Bookings.Any(b => b.Id.Value == bookingId.Value)));
+    }
 }
 

@@ -146,6 +146,11 @@ public class StubMovieEventRepository : IMovieEventRepository
     {
         return await Task.FromResult<MovieEvent?>(null);
     }
+
+    public async Task<Optional<MovieEvent>> GetByBookingId(BookingId bookingId)
+    {
+        return await Task.FromResult(Optional.Of<MovieEvent>(null));
+    }
 }
 
 public class StubLogger<T> : ILogger<T>

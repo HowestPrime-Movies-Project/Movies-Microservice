@@ -1,4 +1,5 @@
 using Howestprime.Movies.Domain.Movies.Events;
+using Howestprime.Movies.Domain.Movies.ValueObjects;
 using Howestprime.Movies.Domain.Shared;
 
 namespace Howestprime.Movies.Domain.Movies;
@@ -69,7 +70,19 @@ public class MovieEvent : AggregateRoot<MovieEventId>
         Booking booking = Booking.Create(standardVisitors, discountVisitors, seatNumbers); 
         Bookings.Add(booking); 
         Visitors = totalVisitors; 
-        RaiseDomainEvent(new BookingOpened(booking.Id, MovieId, roomName ?? RoomId.Value.ToString(), ShowTime.ToString("o"), standardVisitors, discountVisitors, seatNumbers)); 
-        return booking; 
+        RaiseDomainEvent(new BookingOpened(booking.Id, MovieId, roomName ?? RoomId.Value.ToString(), ShowTime.ToString("o"), standardVisitors, discountVisitors, seatNumbers));
+        return booking;
+    }
+
+    public void CloseBooking(BookingId bookingId, CloseBookingReason reason)
+    {
+        Booking booking = Bookings.FirstOrDefault(b => b.Id == bookingId)
+            ?? throw new InvalidOperationException($"Booking with ID {bookingId.Value} not found.");
+
+        int visitorsToRelease = booking.StandardVisitors + booking.DiscountVisitors;
+        booking.Close(reason);
+
+        if (reason == CloseBookingReason.PaymentFailed)
+            Visitors -= visitorsToRelease;
     }
 }

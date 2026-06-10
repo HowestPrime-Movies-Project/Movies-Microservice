@@ -285,6 +285,11 @@ public sealed class ScheduleMovieEventTests
         {
             return Task.FromResult(_uow.ExistingEvent);
         }
+
+        public Task<Aornis.Optional<MovieEvent>> GetByBookingId(BookingId bookingId)
+        {
+            return Task.FromResult(Optional.Of<MovieEvent>(null));
+        }
     }
 
     private sealed class TestLogger<T> : ILogger<T>

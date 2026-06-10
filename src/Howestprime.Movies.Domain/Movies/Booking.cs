@@ -8,12 +8,12 @@ public readonly record struct BookingId(Guid Value) : IEntityId;
 
 public sealed class Booking : Entity<BookingId>
 {
-    public BookingStatus BookingStatus { get; }
-    public PaymentStatus PaymentStatus { get; }
-    public int StandardVisitors { get; }
-    public int DiscountVisitors { get; }
+    public BookingStatus BookingStatus { get; private set; }
+    public PaymentStatus PaymentStatus { get; private set; }
+    public int StandardVisitors { get; private set; }
+    public int DiscountVisitors { get; private set; }
     public List<string> SeatNumbers { get; }
-    
+
     public Booking() {}
     private Booking(
         BookingId id,
@@ -41,6 +41,19 @@ public sealed class Booking : Entity<BookingId>
         Booking booking = new Booking(id, BookingStatus.Open, PaymentStatus.Pending, standardVisitors, discountVisitors, new List<string>());
         booking.ValidateState();
         return booking;
+    }
+
+    public void Close(CloseBookingReason reason)
+    {
+        BookingStatus = BookingStatus.Closed;
+        PaymentStatus = reason == CloseBookingReason.PaymentSuccess ? PaymentStatus.Succes : PaymentStatus.Failed;
+
+        if (reason == CloseBookingReason.PaymentFailed)
+        {
+            SeatNumbers.Clear();
+            StandardVisitors = 0;
+            DiscountVisitors = 0;
+        }
     }
 
     public override void ValidateState()
