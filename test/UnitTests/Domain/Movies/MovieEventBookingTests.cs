@@ -53,11 +53,24 @@ public class MovieEventBookingTests
 
         // Assert
         Assert.NotNull(booking);
-        Assert.Equal(1, movieEvent.Bookings.Count);
+        Assert.Single(movieEvent.Bookings);
         Assert.Equal(3, movieEvent.Visitors);
         Assert.Equal(2, booking.StandardVisitors);
         Assert.Equal(1, booking.DiscountVisitors);
-        // Booking.Create currently doesn't retain provided seat numbers, so expect empty list
-        Assert.Empty(booking.SeatNumbers);
+        Assert.Equal(new[] { "2", "3", "4" }, booking.SeatNumbers);
+    }
+
+    [Fact]
+    public void Book_TwoBookings_SeatsContinueSequentially()
+    {
+        DateTime showTime = DateTime.Now.AddDays(1).Date.AddHours(19);
+        MovieEvent movieEvent = MovieEvent.Create(new MovieId(Guid.NewGuid()), new RoomId(Guid.NewGuid()), showTime, 10);
+
+        Booking first = movieEvent.Book(2, 0);
+        Booking second = movieEvent.Book(1, 1);
+
+        Assert.Equal(new[] { "2", "3" }, first.SeatNumbers);
+        Assert.Equal(new[] { "4", "5" }, second.SeatNumbers);
+        Assert.Equal(4, movieEvent.Visitors);
     }
 }

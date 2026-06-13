@@ -121,15 +121,17 @@ public sealed class ScheduleMovieEventTests
     }
 
     [Fact]
-    public async Task Execute_WhenExistingEventExists_ShouldRemoveAndCreateNew()
+    public async Task Execute_WhenExistingEventExists_ShouldReassignMovieIdInPlace()
     {
         // Arrange
-        var movieId = Guid.NewGuid();
+        var newMovieId = Guid.NewGuid();
         var roomId = Guid.NewGuid();
         var showTime = DateTime.UtcNow.AddDays(2).Date.AddHours(15);
-        var pastShowTime = DateTime.UtcNow.AddDays(1).Date.AddHours(15);
+        var originalShowTime = DateTime.UtcNow.AddDays(1).Date.AddHours(15);
 
-        var existingEvent = MovieEvent.Create(new MovieId(Guid.NewGuid()), new RoomId(Guid.NewGuid()), pastShowTime, 100);
+        var existingEvent = MovieEvent.Create(new MovieId(Guid.NewGuid()), new RoomId(Guid.NewGuid()), originalShowTime, 100);
+        var existingEventId = existingEvent.Id.Value;
+
         var uow = new FakeUnitOfWork();
         uow.MovieExists = true;
         uow.RoomExists = true;
@@ -139,7 +141,7 @@ public sealed class ScheduleMovieEventTests
         var useCase = new ScheduleMovieEvent(uow, logger);
 
         var input = new ScheduleMovieEventInput(
-            movieId: movieId.ToString(),
+            movieId: newMovieId.ToString(),
             roomId: roomId.ToString(),
             showTime: showTime
         );
@@ -148,10 +150,11 @@ public sealed class ScheduleMovieEventTests
         var output = await useCase.Execute(input);
 
         // Assert
-        Assert.True(uow.RemoveCalled, "Remove should have been called for existing event");
+        Assert.False(uow.RemoveCalled, "Remove must NOT be called - the event is updated in place");
         Assert.True(uow.SaveCalled);
         Assert.True(uow.DoCalled);
-        Assert.True(Guid.TryParse(output.movieEventId, out _));
+        Assert.Equal(existingEventId.ToString(), output.movieEventId);
+        Assert.Equal(newMovieId, existingEvent.MovieId.Value);
     }
 
     [Fact]

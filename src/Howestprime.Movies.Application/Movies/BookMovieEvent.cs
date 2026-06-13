@@ -29,8 +29,14 @@ public class BookMovieEvent(
 
         if (!movieEventOptional.HasValue) throw new InvalidOperationException($"Movie event with ID {movieEventId.Value} not found.");
         MovieEvent movieEvent = movieEventOptional.Value;
-        Booking booking = movieEvent.Book(input.standardVisitors, input.discountVisitors);
-  
+
+        IRoomRepository roomRepository = uow.Repo<IRoomRepository>();
+        Optional<Room> roomOptional = await roomRepository.ById(movieEvent.RoomId);
+        if (!roomOptional.HasValue)
+            throw new InvalidOperationException($"Room with ID {movieEvent.RoomId.Value} not found.");
+
+        Booking booking = movieEvent.Book(input.standardVisitors, input.discountVisitors, roomOptional.Value.Name);
+
         await uow.Save<IMovieEventRepository>(movieEvent);
         await uow.Do();
 
@@ -39,7 +45,7 @@ public class BookMovieEvent(
             booking.Id.Value,
             movieEvent.Id.Value);
 
-        return new BookMovieEventOutput(booking.Id.ToString());
+        return new BookMovieEventOutput(booking.Id.Value.ToString());
 
     }
 }

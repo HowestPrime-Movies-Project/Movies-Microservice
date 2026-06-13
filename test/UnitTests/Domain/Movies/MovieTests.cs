@@ -156,7 +156,12 @@ public sealed class MovieTests
             Assert.IsType<Howestprime.Movies.Domain.Movies.Events.MovieRegistered>(movie.DomainEvents.Single());
         Assert.Equal(movie.Id, registered.MovieId);
         Assert.Equal(title, registered.Title);
-        Assert.Equal(releaseYear, registered.ReleaseYear);
+        Assert.Equal(releaseYear.Year, registered.ReleaseYear);
+        Assert.Equal(duration.Runtime, registered.Duration);
+        Assert.Equal(string.Join(",", genres.Select(g => g.Value)), registered.Genres);
+        Assert.Equal(string.Join(",", actors.Select(a => a.Value)), registered.Actors);
+        Assert.Equal(ageRating.Age, registered.AgeRating);
+        Assert.Equal(posterUrl.Url, registered.PosterUrl);
         Assert.Equal("Howestprime.Movies.Movie.MovieRegistered", registered.FQDN);
     }
 

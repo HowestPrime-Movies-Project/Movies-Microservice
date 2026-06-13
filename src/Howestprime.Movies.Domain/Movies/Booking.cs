@@ -38,7 +38,7 @@ public sealed class Booking : Entity<BookingId>
         )
     {
         BookingId id = EntityId.New<BookingId>();
-        Booking booking = new Booking(id, BookingStatus.Open, PaymentStatus.Pending, standardVisitors, discountVisitors, new List<string>());
+        Booking booking = new Booking(id, BookingStatus.Open, PaymentStatus.Pending, standardVisitors, discountVisitors, seatNumbers);
         booking.ValidateState();
         return booking;
     }
@@ -46,7 +46,7 @@ public sealed class Booking : Entity<BookingId>
     public void Close(CloseBookingReason reason)
     {
         BookingStatus = BookingStatus.Closed;
-        PaymentStatus = reason == CloseBookingReason.PaymentSuccess ? PaymentStatus.Succes : PaymentStatus.Failed;
+        PaymentStatus = reason == CloseBookingReason.PaymentSuccess ? PaymentStatus.Success : PaymentStatus.Failed;
 
         if (reason == CloseBookingReason.PaymentFailed)
         {

@@ -12,13 +12,13 @@ namespace Howestprime.Movies.Infrastructure.WebApi.Controllers.Movies;
 public static class FindMovieByIdController
 {
     public static async Task<Results<Ok<Movie>, NotFound<string>, BadRequest<string>>> Invoke(
-        [FromRoute] string movieId,
+        [FromRoute] Guid movieId,
         [FromHeader(Name = "x-user-role"), Required] string xUserRole,
         [FromServices] IUseCase<FindMovieByIdInput, MovieData?> useCase
     )
     {
         FindMovieByIdInput input = new(
-            movieId,
+            movieId.ToString(),
             xUserRole
         );
         MovieData? output = await useCase.Execute(input);

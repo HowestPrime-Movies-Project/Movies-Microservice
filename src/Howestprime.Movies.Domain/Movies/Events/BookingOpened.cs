@@ -14,9 +14,9 @@ public sealed class BookingOpened(
     eventName: nameof(BookingOpened),
     aggregateName: nameof(MovieEvent))
 {
-    BookingId BookingId { get; init; } =  bookingId;
-    MovieId MovieId { get; init; } = movieId;
-    string Room { get; init; } = room;
+    public BookingId BookingId { get; private init; } = bookingId;
+    public MovieId MovieId { get; private init; } = movieId;
+    public string Room { get; private init; } = room;
     public string ShowTime { get; private init; } = showTime;
     public int StandardVisitors { get; private init; } = standardVisitors;
     public int DiscountedVisitors { get; private init; }  = discountedVisitors;

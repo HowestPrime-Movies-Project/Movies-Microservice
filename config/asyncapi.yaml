@@ -143,13 +143,11 @@ components:
           duration:
             type: integer
           genres:
-            type: array
-            items:
-              type: string
+            type: string
+            description: Comma-separated list of genres.
           actors:
-            type: array
-            items:
-              type: string
+            type: string
+            description: Comma-separated list of actors.
           ageRating:
             type: integer
           posterUrl:

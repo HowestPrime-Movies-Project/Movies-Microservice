@@ -37,7 +37,7 @@ public class MovieEventCloseBookingTests
         movieEvent.CloseBooking(booking.Id, CloseBookingReason.PaymentSuccess);
 
         Assert.Equal(BookingStatus.Closed, booking.BookingStatus);
-        Assert.Equal(PaymentStatus.Succes, booking.PaymentStatus);
+        Assert.Equal(PaymentStatus.Success, booking.PaymentStatus);
         Assert.Equal(visitorsBeforeClose, movieEvent.Visitors);
     }
 

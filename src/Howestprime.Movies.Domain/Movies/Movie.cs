@@ -47,7 +47,12 @@ public class Movie : AggregateRoot<MovieId>
         movie.RaiseDomainEvent(new MovieRegistered(
             movie.Id,
             movie.Title,
-            movie.ReleaseYear
+            movie.ReleaseYear.Year,
+            movie.Duration.Runtime,
+            string.Join(",", movie.Genres.Select(g => g.Value)),
+            string.Join(",", movie.Actors.Select(a => a.Value)),
+            movie.AgeRating.Age,
+            movie.PosterUrl.Url
             ));
 
         return movie;

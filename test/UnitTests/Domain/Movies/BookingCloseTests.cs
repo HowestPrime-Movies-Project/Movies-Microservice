@@ -13,7 +13,7 @@ public class BookingCloseTests
         booking.Close(CloseBookingReason.PaymentSuccess);
 
         Assert.Equal(BookingStatus.Closed, booking.BookingStatus);
-        Assert.Equal(PaymentStatus.Succes, booking.PaymentStatus);
+        Assert.Equal(PaymentStatus.Success, booking.PaymentStatus);
     }
 
     [Fact]

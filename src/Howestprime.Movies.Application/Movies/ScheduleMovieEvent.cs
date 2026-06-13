@@ -52,20 +52,18 @@ public sealed class ScheduleMovieEvent(
         var existingEvent = await movieEventRepository.GetByShowtimeAndRoomId(universalTime, roomId);
         
         MovieEvent movieEvent;
-        
+
         if (existingEvent != null)
         {
-            // Overwrite: Remove the old event and create a new one
-            await movieEventRepository.Remove(existingEvent);
-            movieEvent = MovieEvent.Create(movieId, roomId, universalTime, roomOptional.Value.Capacity);
+            // Overwrite: keep the existing aggregate, replace its movieId
+            existingEvent.ReassignMovie(movieId);
+            movieEvent = existingEvent;
         }
         else
         {
-            // Create new movie event
             movieEvent = MovieEvent.Create(movieId, roomId, universalTime, roomOptional.Value.Capacity);
         }
-        
-        // Save the movie event
+
         await uow.Save<IMovieEventRepository>(movieEvent);
         await uow.Do();
 

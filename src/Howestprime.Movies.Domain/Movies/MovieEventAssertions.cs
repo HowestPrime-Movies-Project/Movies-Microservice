@@ -10,7 +10,8 @@ public class MovieEventAssertions
 
     public static void EnsureShowtimeIsInTheFuture(DateTime time)
     {
-        if (time <= DateTime.Now)
+        DateTime reference = time.Kind == DateTimeKind.Utc ? DateTime.UtcNow : DateTime.Now;
+        if (time <= reference)
             throw new ArgumentException($"Movie event {time} must be in the future.");
     }
 

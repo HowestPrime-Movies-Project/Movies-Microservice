@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Runtime.CompilerServices;
 
 namespace Howestprime.Movies.Domain.Shared;
@@ -18,6 +19,9 @@ public static class Asserts
     )
     {
         if (value == null)
+            throw new ArgumentException("Value cannot be empty.", paramName);
+
+        if (value is IEnumerable enumerable && !enumerable.GetEnumerator().MoveNext())
             throw new ArgumentException("Value cannot be empty.", paramName);
     }
 

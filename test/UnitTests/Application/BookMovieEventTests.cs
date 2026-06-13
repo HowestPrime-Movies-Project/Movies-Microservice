@@ -56,20 +56,24 @@ public class BookMovieEventTests
     {
         var eventId = Guid.NewGuid();
         var movieId = Guid.NewGuid();
+        var roomId = new RoomId(Guid.NewGuid());
         var input = new BookMovieEventInput(eventId.ToString(), 2, 1);
-        
+
         var movieEvent = MovieEvent.Create(
-            new MovieId(movieId), 
-            new RoomId(Guid.NewGuid()), 
+            new MovieId(movieId),
+            roomId,
             DateTime.UtcNow.AddDays(1).Date.Add(new TimeSpan(19, 0, 0)),
             10
         );
-        
+
         _uow.SetMovieEvent(new MovieEventId(eventId), movieEvent);
+        _uow.SetRoom(roomId, Room.Create("Blue Room", 100, roomId));
+
         var result = await _sut.Execute(input);
-        
+
         Assert.NotNull(result);
         Assert.NotEmpty(result.bookingId);
+        Assert.True(Guid.TryParse(result.bookingId, out _));
         Assert.True(_uow.SaveWasCalled);
         Assert.True(_uow.DoWasCalled);
     }
@@ -79,6 +83,7 @@ public class BookMovieEventTests
 public class StubUnitOfWork : IUnitOfWork
 {
     private Dictionary<MovieEventId, MovieEvent> _movieEvents = new();
+    private Dictionary<RoomId, Room> _rooms = new();
     public bool SaveWasCalled { get; private set; }
     public bool DoWasCalled { get; private set; }
 
@@ -87,11 +92,20 @@ public class StubUnitOfWork : IUnitOfWork
         _movieEvents[id] = movieEvent;
     }
 
+    public void SetRoom(RoomId id, Room room)
+    {
+        _rooms[id] = room;
+    }
+
     public TRepository Repo<TRepository>() where TRepository : IRepository
     {
         if (typeof(TRepository) == typeof(IMovieEventRepository))
         {
             return (TRepository)(IRepository)new StubMovieEventRepository(_movieEvents);
+        }
+        if (typeof(TRepository) == typeof(IRoomRepository))
+        {
+            return (TRepository)(IRepository)new StubRoomRepository(_rooms);
         }
         throw new InvalidOperationException($"Unknown repository type: {typeof(TRepository)}");
     }
@@ -151,6 +165,29 @@ public class StubMovieEventRepository : IMovieEventRepository
     {
         return await Task.FromResult(Optional.Of<MovieEvent>(null));
     }
+}
+
+public class StubRoomRepository : IRoomRepository
+{
+    private readonly Dictionary<RoomId, Room> _rooms;
+
+    public StubRoomRepository(Dictionary<RoomId, Room> rooms)
+    {
+        _rooms = rooms;
+    }
+
+    public Task<Optional<Room>> ById(RoomId id)
+    {
+        return Task.FromResult(_rooms.TryGetValue(id, out var room)
+            ? Optional.Of(room)
+            : Optional.Of<Room>(null));
+    }
+
+    public Task<bool> Exists(RoomId id) => Task.FromResult(_rooms.ContainsKey(id));
+
+    public Task Save(Room aggregateRoot) => Task.CompletedTask;
+
+    public Task Remove(Room aggregateRoot) => Task.CompletedTask;
 }
 
 public class StubLogger<T> : ILogger<T>

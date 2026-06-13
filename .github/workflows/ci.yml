@@ -51,9 +51,18 @@ jobs:
           dotnet test --configuration Release \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
+          /p:CoverletOutput=./TestResults/coverage.opencover.xml \
           /p:Threshold=97 \
           /p:ThresholdType=line \
           '/p:Include="[Howestprime.Movies.Application]*,[Howestprime.Movies.Domain]*"'
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: '**/TestResults/coverage.opencover.xml'
+          if-no-files-found: warn
 
   build:
     runs-on: ubuntu-latest

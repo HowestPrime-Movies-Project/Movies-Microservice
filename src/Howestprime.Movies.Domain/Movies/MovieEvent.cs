@@ -7,11 +7,11 @@ namespace Howestprime.Movies.Domain.Movies;
 public readonly record struct MovieEventId(Guid Value) : IEntityId;
 
 public class MovieEvent : AggregateRoot<MovieEventId>
-{ 
-    public MovieId MovieId { get; } 
-    public RoomId RoomId { get; } 
-    public DateTime ShowTime { get; } 
-    public int Capacity { get; } 
+{
+    public MovieId MovieId { get; private set; }
+    public RoomId RoomId { get; }
+    public DateTime ShowTime { get; }
+    public int Capacity { get; }
     public List<Booking> Bookings { get; } = [];
     public int Visitors { get; private set; }
     
@@ -46,7 +46,12 @@ public class MovieEvent : AggregateRoot<MovieEventId>
         return movieEvent; 
     }
     
-    public override void ValidateState() 
+    public void ReassignMovie(MovieId movieId)
+    {
+        MovieId = movieId;
+    }
+
+    public override void ValidateState()
     {
         MovieEventAssertions.EnsureShowtimeIsAt15hOr19h(ShowTime); 
         MovieEventAssertions.EnsureShowtimeIsInTheFuture(ShowTime); 
@@ -63,7 +68,8 @@ public class MovieEvent : AggregateRoot<MovieEventId>
         if (ShowTime > DateTime.UtcNow.AddDays(14))
             throw new InvalidOperationException("Cannot book movie events scheduled more than 14 days in advance.");
 
-        List<string> seatNumbers = Enumerable.Range(2, standardVisitors + discountVisitors)
+        int firstSeat = Visitors + 2;
+        List<string> seatNumbers = Enumerable.Range(firstSeat, standardVisitors + discountVisitors)
             .Select(seatNumber => seatNumber.ToString())
             .ToList();
 
