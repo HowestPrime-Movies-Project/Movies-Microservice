@@ -121,6 +121,7 @@ jobs:
           "Database__Username=${{ vars.HOWESTPRIME_MOVIES_P_PSQL_LOGIN }}" \
           "Database__ConnectionString=${{ vars.HOWESTPRIME_MOVIES_P_PSQL_CONNECTION_STRING }}" \
           "MessageBroker__Hostname=${{ vars.HOWESTPRIME_WIDE_P_MESSAGEBROKER_HOSTNAME }}" \
+          "MessageBroker__Port=5672" \
           "MessageBroker__VirtualHost=${{ vars.HOWESTPRIME_WIDE_P_MESSAGEBROKER_VHOST }}" \
           "MessageBroker__Password=secretref:mb-password" \
           "MessageBroker__Username=${{ vars.HOWESTPRIME_WIDE_P_MESSAGEBROKER_LOGIN }}"
