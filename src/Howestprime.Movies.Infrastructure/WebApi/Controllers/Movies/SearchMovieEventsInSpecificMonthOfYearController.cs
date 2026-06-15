@@ -11,7 +11,7 @@ namespace Howestprime.Movies.Infrastructure.WebApi.Controllers.Movies;
 
 public static class SearchMovieEventsInSpecificMonthOfYearController
 {
-    public static async Task<Results<Ok<HowestprimeSchedule>, BadRequest<string>>> Invoke(
+    public static async Task<Results<Ok<List<MovieEvent>>, BadRequest<string>>> Invoke(
         [FromQuery, Required] string? Month,
         [FromQuery, Required] string? Year,
         [FromServices] IUseCase<SearchMovieEventsInTimeRangeInput, List<MovieEventData>> useCase
@@ -20,7 +20,7 @@ public static class SearchMovieEventsInSpecificMonthOfYearController
         if (Month is null || Year is null) throw new ArgumentException("Month and Year are required");
         int month = int.Parse(Month);
         int year = int.Parse(Year);
-        
+
         DateTime startDate = new DateTime(year, month, 1, 0, 0, 1, DateTimeKind.Utc);
         DateTime endDate = new DateTime(year, month, DateTime.DaysInMonth(year, month), 23, 59, 59, DateTimeKind.Utc);
 
@@ -31,15 +31,6 @@ public static class SearchMovieEventsInSpecificMonthOfYearController
 
         List<MovieEventData> output = await useCase.Execute(input);
 
-        var schedule = ConvertToHowestprimeSchedule(output);
-
-        return TypedResults.Ok(schedule);
-    }
-    
-    private static HowestprimeSchedule ConvertToHowestprimeSchedule(List<MovieEventData> output)
-    {
-        if (output.Count == 0) return new HowestprimeSchedule(new List<Guid>(), new List<MovieEvent>());
-        
         var movieEvents = output
             .OrderBy(m => m.Room.Name)
             .ThenBy(m => m.ShowTime)
@@ -61,10 +52,7 @@ public static class SearchMovieEventsInSpecificMonthOfYearController
                 )
             )).ToList();
 
-        return new HowestprimeSchedule(
-            output.Select(m => m.Movie.Id).Distinct().ToList(),
-            movieEvents
-        );
+        return TypedResults.Ok(movieEvents);
     }
     
 }
