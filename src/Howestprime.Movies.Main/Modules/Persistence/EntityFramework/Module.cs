@@ -14,9 +14,7 @@ public static class PersistenceModule
     public static async Task<WebApplication> UseEFCoreModule(this WebApplication app)
     {
         app.ApplyMigrations();
-
-        if (!app.Environment.IsProduction())
-            await app.SeedData();
+        await app.SeedData();
 
         return app; 
     }
