@@ -49,8 +49,8 @@ public class Movie : AggregateRoot<MovieId>
             movie.Title,
             movie.ReleaseYear.Year,
             movie.Duration.Runtime,
-            string.Join(",", movie.Genres.Select(g => g.Value)),
-            string.Join(",", movie.Actors.Select(a => a.Value)),
+            movie.Genres.Select(g => g.Value).ToList(),
+            movie.Actors.Select(a => a.Value).ToList(),
             movie.AgeRating.Age,
             movie.PosterUrl.Url
             ));
