@@ -1,46 +1,136 @@
-# HowestPrime — Movies Microservice
+<div align="center">
 
-A lightweight, production-oriented microservice that manages movie data for the HowestPrime platform. Designed to be RESTful, observable, and easy to integrate into a larger microservice ecosystem.
+# 🎬 HowestPrime Movies Service
 
-Key features
+**A REST API for the HowestPrime platform that manages the movie catalog and publishes domain events.**
 
-- REST API for managing movies (create, read, update, delete).
-- Flexible querying: basic search and filtering plus pagination for large result sets.
-- Event-driven integration: publishes domain events (movie created/updated/deleted) to RabbitMQ for asynchronous workflows.
-- OpenAPI / Swagger documentation available at /swagger/ for interactive API exploration.
-- Docker-friendly: designed to run in containers and compose setups for local development.
-- Environment-configurable: connection details (RabbitMQ, DB), ports and logging are provided via environment variables.
-- Health checks and readiness probes suitable for orchestration platforms.
+<p>
+  <img src="https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=csharp&logoColor=white" alt="C# badge">
+  <img src="https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET badge">
+  <img src="https://img.shields.io/badge/ASP.NET_Core-5C2D91?style=for-the-badge&logo=dotnet&logoColor=white" alt="ASP.NET Core badge">
+  <img src="https://img.shields.io/badge/Entity_Framework_Core-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="Entity Framework Core badge">
+  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger badge">
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL badge">
+  <img src="https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white" alt="RabbitMQ badge">
+</p>
 
-Quick start (local)
+</div>
 
-1. Ensure RabbitMQ is running (management UI usually at http://localhost:15672/).
-2. Start the service (using your preferred method: run from IDE, use your build tool, or a container).
-3. Open the Swagger UI at http://localhost:8000/swagger/ to explore endpoints and try requests.
+> A lightweight, event-driven service that acts as the catalog source of truth for the platform.
 
-Configuration
+## 📑 Table of Contents
 
-Configure behavior through environment variables. Common ones include:
+- [📖 About](#about)
+- [🏗️ Architecture](#architecture)
+- [✨ Features](#features)
+- [📱 API Surface](#api-surface)
+- [🛠️ Tech Stack](#tech-stack)
+- [🚀 Getting Started](#getting-started)
+- [📄 License](#license)
+- [👤 Author](#author)
 
-- PORT — HTTP port the service listens on (default: 8000)
-- RABBITMQ_URL — RabbitMQ connection URL (e.g. amqp://guest:guest@localhost:5672)
-- DATABASE_URL — Database connection string (if applicable)
-- LOG_LEVEL — Logging verbosity (INFO, DEBUG, etc.)
+## 📖 About
 
-Notes for developers
+- This service manages movie data for the HowestPrime platform.
+- It exposes a REST API for creating, reading, updating, and deleting movies.
+- The service publishes domain events so other parts of the platform can react asynchronously.
+- The startup project lives in `src/Howestprime.Movies.Main`.
 
-- Focused on keeping the API small and encapsulated so it can be composed with other services.
-- Event messages are minimal and intend to support downstream services without tight coupling.
+## 🏗️ Architecture
 
-Useful links
+```mermaid
+flowchart TB
+    API[ASP.NET Core Web API]
+    APP[Application layer]
+    INFRA[Infrastructure layer]
+    DB[(PostgreSQL)]
+    MQ[Message Broker]
+    SWAGGER[Swagger / OpenAPI]
 
-- Swagger UI: http://localhost:8000/swagger/
-- RabbitMQ management UI: http://localhost:15672/
+    API --> APP
+    APP --> INFRA
+    INFRA --> DB
+    APP --> MQ
+    API --> SWAGGER
+```
 
-Contributing
+## ✨ Features
 
-Contributions welcome — open an issue or PR with a clear change description. Keep changes small and add tests where appropriate.
+**🎞️ Movie catalog**
 
-License
+- Create, update, and delete movie records.
+- Retrieve movie details with filtering and pagination support.
+- Keep the catalog available as the source of truth for the platform.
 
-Apache 2.0 License. See LICENSE file for details.
+**📡 Integration**
+
+- Publish movie-related events for downstream consumers.
+- Keep the service container-friendly and environment-configurable.
+- Expose health and API documentation endpoints for local development.
+
+**📚 Documentation**
+
+- Swagger UI for exploring the API.
+- Contract-friendly project structure with clear application and infrastructure boundaries.
+
+## 📱 API Surface
+
+| Area | Details |
+| --- | --- |
+| REST API | Movie CRUD, filtering, and paging |
+| Documentation | Swagger / OpenAPI |
+| Events | Movie created, updated, and deleted messages |
+| Runtime | ASP.NET Core web host |
+
+## 🛠️ Tech Stack
+
+| Area | Technologies |
+| --- | --- |
+| Language | C# |
+| Framework | ASP.NET Core |
+| Data access | Entity Framework Core |
+| Database | PostgreSQL |
+| Messaging | RabbitMQ or equivalent broker |
+| Build | .NET SDK 10 |
+| Docs | Swagger / OpenAPI |
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- .NET 10 SDK
+- PostgreSQL
+- A message broker for event publishing
+- The required configuration values for the runtime environment
+
+### Restore dependencies
+
+```bash
+dotnet restore
+```
+
+### Run the service
+
+```bash
+dotnet run --project src/Howestprime.Movies.Main
+```
+
+### Run tests
+
+```bash
+dotnet test
+```
+
+### Open the API docs
+
+When the service is running, open the Swagger UI at `http://localhost:8000/swagger/`.
+
+## 📄 License
+
+This project is used for educational and demo purposes within the HowestPrime course context.
+
+## 👤 Author
+
+| Name | GitHub | LinkedIn |
+| --- | --- | --- |
+| Maurice De Kegel | [MriceDK](https://github.com/MriceDK) | [LinkedIn](https://www.linkedin.com/in/dekegelmaurice/) |
