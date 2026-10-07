@@ -127,7 +127,7 @@ When the service is running, open the Swagger UI at `http://localhost:8000/swagg
 
 ## 📄 License
 
-This project is used for educational and demo purposes within the HowestPrime course context.
+This project uses the Apache 2.0 License
 
 ## 👤 Author
 
